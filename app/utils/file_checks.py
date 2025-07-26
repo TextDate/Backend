@@ -1,4 +1,6 @@
 import mimetypes
+import tempfile
+
 from fastapi import UploadFile, HTTPException
 import logging
 
@@ -21,6 +23,21 @@ def validate_txt_file(file: UploadFile) -> bool:
     mime_type, _ = mimetypes.guess_type(file.filename)
     return mime_type == "text/plain"
 
+
+async def validate_file(file: UploadFile) -> str:
+    if not validate_txt_file(file):
+        raise HTTPException(status_code=400, detail="Only plain text files (.txt) are supported.")
+
+    if not await text_is_utf_8(file):
+        raise HTTPException(status_code=400, detail="Uploaded file must be UTF-8 encoded.")
+
+    try:
+        contents = await file.read()
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".txt", mode="wb") as tmp:
+            tmp.write(contents)
+            return tmp.name
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process uploaded file: {str(e)}")
 
 def text_trimmer(text_path: str) -> str:
     """
