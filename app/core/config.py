@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     decade: str
     century: str
     target_words_path: str
+    cors_origins: list[str] = []
 
     class Config:
         env_file = ".env"
