@@ -32,7 +32,7 @@ python-dotenv==1.1.1
 python-multipart==0.0.20
 pytz==2025.2
 regex==2024.11.6
-scikit-learn==1.7.1
+scikit-learn==1.6.1
 scipy==1.16.0
 setuptools==80.9.0
 six==1.17.0
@@ -45,5 +45,5 @@ typing-inspection==0.4.1
 typing_extensions==4.14.1
 tzdata==2025.2
 uvicorn==0.35.0
-vomm @ git+https://github.com/rpgomez/vomm.git@c23227522aae9d37adeb421e196563ed1a49b314
+vomm @ git+https://github.com/Pjnp5/vomm.git@master
 zipp==3.23.0
