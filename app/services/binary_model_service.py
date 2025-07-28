@@ -1,26 +1,50 @@
 from fastapi import HTTPException
 from app.utils.model_loader import prepare_model_and_features
+import logging
 
-def predict_binary_label(text: str, model_type: str = "decade", threshold: int = 1810) -> dict:
+logger = logging.getLogger(__name__)
+
+def predict_binary_label(text: str, threshold: int, model_type: str = "decade",) -> dict:
     try:
         model, label_encoder, top_predictions, feature_values = prepare_model_and_features(text, model_type)
 
-        top_label = str(top_predictions[0][0])
-        top_prob = float(top_predictions[0][1])
+        if not top_predictions:
+            raise ValueError("No predictions were returned.")
 
-        try:
-            top_decade = int(top_label)
-        except ValueError:
-            raise ValueError(f"Top label '{top_label}' could not be converted to an integer.")
+        older = []
+        younger_or_equal = []
 
-        prediction = "older" if top_decade < threshold else "equal or younger"
+        for label, probability in top_predictions:
+            try:
+                label_int = int(label)
+                entry = {"label": str(label), "probability": float(probability)}
+                if label_int < threshold:
+                    older.append(entry)
+                else:
+                    younger_or_equal.append(entry)
+            except ValueError:
+                logger.warning(f"Skipping invalid label: {label}")
+                continue
+
+        older_total = sum(item["probability"] for item in older)
+        younger_total = sum(item["probability"] for item in younger_or_equal)
+
+        prediction = "older" if older_total > younger_total else "equal or younger"
 
         return {
             "prediction": prediction,
-            "top_decade": top_decade,
-            "top_probability": top_prob,
-            "threshold": threshold
+            "top_k": {
+                "older": {
+                    "total_probability": older_total,
+                    "items": older
+                },
+                "equal_or_younger": {
+                    "total_probability": younger_total,
+                    "items": younger_or_equal
+                }
+            }
         }
 
     except Exception as e:
+        logger.exception("Binary prediction failed.")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
