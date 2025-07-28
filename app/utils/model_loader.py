@@ -10,18 +10,14 @@ loaded_models = {}
 
 def prepare_model_and_features(text: str, model_type: str):
     try:
-        # Load model and metadata
         model, label_encoder, feature_names = load_model(model_type)
 
-        # Extract features
         feature_values_raw = extract_features_from_text(text)
         if not feature_values_raw:
             raise ValueError("No features were extracted from the text.")
 
-        # Align feature order
         feature_values = np.array([[feature_values_raw.get(feat, 0.0) for feat in feature_names]])
 
-        # Predict top labels and probabilities
         top_predictions = get_top_k_predictions(model, label_encoder, feature_values, model_type)
 
         return model, label_encoder, top_predictions, feature_values
