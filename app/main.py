@@ -20,3 +20,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+def health_check():
+    """Health check endpoint for Railway/container orchestration."""
+    return {"status": "healthy"}
