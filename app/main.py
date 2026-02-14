@@ -1,23 +1,8 @@
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
 from app.core.config import settings
-
-# Debug: Print working directory and check model files at startup
-print(f"=== STARTUP DEBUG ===")
-print(f"Current working directory: {os.getcwd()}")
-print(f"Directory contents: {os.listdir('.')}")
-print(f"DECADE setting: {settings.decade}")
-print(f"CENTURY setting: {settings.century}")
-print(f"Decade model exists: {os.path.isfile(settings.decade)}")
-print(f"Century model exists: {os.path.isfile(settings.century)}")
-if os.path.exists('saved_models'):
-    print(f"saved_models contents: {os.listdir('saved_models')}")
-    if os.path.exists('saved_models/decades'):
-        print(f"saved_models/decades contents: {os.listdir('saved_models/decades')}")
-print(f"=== END DEBUG ===")
 
 app = FastAPI(
     title="TextDate Predictor API",
