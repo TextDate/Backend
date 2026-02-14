@@ -22,5 +22,5 @@ RUN echo "=== Checking saved_models directory ===" && \
     ls -la saved_models/decades/ && \
     ls -la saved_models/centuries/
 
-# Use uvicorn to run FastAPI
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5050", "--reload"]
+# Use uvicorn to run FastAPI (no --reload in production)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5050"]
